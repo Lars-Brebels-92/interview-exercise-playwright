@@ -13,6 +13,7 @@ export class SearchPage {
     readonly englishLanguageFilter: Locator;
     readonly englishFilterChip: Locator;
     readonly sortingSelect: Locator;
+    readonly productLinks: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -46,6 +47,11 @@ export class SearchPage {
                 name: 'Sortering',
             })
             .first();
+        this.productLinks = page
+            .locator('a[href*="/nl/nl/p/"]')
+            .filter({
+                has: page.getByRole('heading', { level: 2 }),
+            });
     }
 
     async open(searchTerm: string): Promise<void> {
@@ -66,9 +72,19 @@ export class SearchPage {
 
     async verifySearchTerm(searchTerm: string): Promise<void> {
         await expect(this.searchBar).toHaveValue(searchTerm);
-        await expect(this.searchResultsTitle).toContainText(
-            searchTerm
-        );
+        const resultsTitle = await this.searchResultsTitle.textContent();
+        if (!resultsTitle) {
+            throw new Error('Search results title was not found');
+        }
+        expect(this.normalizeSearchTerm(resultsTitle))
+            .toContain(this.normalizeSearchTerm(searchTerm));
+    }
+
+    private normalizeSearchTerm(value: string): string {
+        return value
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
     }
 
     async verifyProductsHaveTitleAndPrice(): Promise<void> {
@@ -190,5 +206,32 @@ export class SearchPage {
             );
         await action();
         await responsePromise;
+    }
+
+    async openProductInNewTab(index: number = 0): Promise<{
+        productPage: Page;
+        productTitle: string;
+        productUrl: string;
+    }> {
+        const productLink = this.productLinks.nth(index);
+        const productTitle = await productLink
+            .getByRole('heading', { level: 2 })
+            .innerText();
+        const productUrl = await productLink.getAttribute('href');
+        if (!productUrl) {
+            throw new Error(`Product URL was not found for product ${index + 1}`);
+        }
+        const productPagePromise = this.page.context().waitForEvent('page');
+        await productLink.click({
+            modifiers: ['Control'],
+        });
+        const productPage = await productPagePromise;
+        await productPage.bringToFront();
+        await productPage.waitForLoadState('domcontentloaded');
+        return {
+            productPage,
+            productTitle,
+            productUrl,
+        };
     }
 }
