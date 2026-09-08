@@ -20,3 +20,11 @@ Voor deze testopdracht is Nederlands als standaardtaal gekozen. De huidige locat
 Wanneer de tests ook in andere talen uitgevoerd moeten worden, kunnen de taalafhankelijke teksten apart bijgehouden worden. De tests kunnen dan afhankelijk van de gekozen taal de juiste teksten gebruiken.
 
 Voor deze opdracht is dit niet geïmplementeerd, omdat het testen van meerdere talen buiten de gevraagde scope valt.
+
+CI/CD optimalisatie
+
+De huidige pipeline installeert tijdens iedere run de benodigde Node.js dependencies en Playwright-browsers. Dit maakt de pipeline eenvoudig en zorgt ervoor dat de gebruikte versies vanuit het project worden bepaald.
+
+In een grotere of vaker uitgevoerde pipeline kan de uitvoeringstijd verder geoptimaliseerd worden. Zo kan ervoor gekozen worden om alleen de browser-engine(s) te installeren waarop de tests daadwerkelijk uitgevoerd worden, in plaats van alle Playwright-browsers. Daarnaast kan gebruikgemaakt worden van een vooraf ingerichte CI-image waarin Node.js, Playwright en de benodigde browserdependencies al aanwezig zijn.
+
+Hierdoor hoeft niet bij iedere pipeline-run de volledige omgeving opnieuw opgebouwd te worden, wat de totale uitvoeringstijd kan verkorten.
