@@ -17,5 +17,6 @@ export class JouwPrivacyvoorkeurenModal {
     async acceptAllCookies(): Promise<void> {
         await this.modal.waitFor({ state: 'visible' });
         await this.acceptAllButton.click();
+        await this.modal.waitFor({ state: 'hidden' });
     }
 }

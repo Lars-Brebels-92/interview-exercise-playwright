@@ -17,5 +17,6 @@ export class HoeWilJijBollenModal {
     async continue(): Promise<void> {
         await this.modal.waitFor({ state: 'visible' });
         await this.continueButton.click();
+        await this.modal.waitFor({ state: 'hidden' });
     }
 }

@@ -16,6 +16,8 @@ export default defineConfig({
     ['html', { open: 'never' }],
   ],
 
+  timeout: 60_000,
+
   use: {
     baseURL: process.env.BASE_URL ?? 'https://www.bol.com',
 
@@ -30,6 +32,10 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
     },
   ],
 });
