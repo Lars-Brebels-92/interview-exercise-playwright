@@ -1,18 +1,20 @@
 # Hier leg je kort uit hoe je de tests hebt opgezet, welke risico’s je zag, en hoe je flaky tests vermeden hebt.
 
-## Tijdelijke IP-blokkering tijdens ontwikkeling
+## Tijdelijke IP-blokkering en flakiness tijdens ontwikkeling
 
 Tijdens de ontwikkeling trad tijdelijk een IP-blokkering op bij het uitvoeren van geautomatiseerde tests tegen bol.com. Hierbij werd het Playwright-verkeer door bol.com als mogelijk geautomatiseerd verkeer gedetecteerd en werd in plaats van de reguliere website een blokkeringspagina weergegeven.
 
 Een voorbeeld hiervan is opgenomen in `BolComBlokkeertIP.png`.
 
-Omdat de tests tegen de live omgeving van bol.com worden uitgevoerd, is dit een extern risico waarop het testframework zelf beperkte invloed heeft.
+Tijdens het testen werd vastgesteld dat dit probleem voornamelijk optrad wanneer Playwright rechtstreeks naar de homepage van bol.com navigeerde. Bij directe navigatie naar een zoekresultatenpagina, bijvoorbeeld via `/nl/nl/s/?searchtext=Pokemon`, trad dit probleem tijdens de ontwikkeling niet op.
 
-De blokkering was tijdelijk en heeft de uiteindelijke uitvoering van de opdracht niet verhinderd. Alle gevraagde testscenario's konden uiteindelijk succesvol worden ontwikkeld en uitgevoerd.
+Dit heeft vooral impact op testcase QA-1, omdat dit scenario volgens de opdracht expliciet vanaf de homepage moet starten. Hierdoor kan QA-1 sporadisch flaky zijn wanneer bol.com het geautomatiseerde verkeer tijdens het openen van de homepage blokkeert. De overige scenario's navigeren rechtstreeks naar de zoekresultatenpagina en bleken hierdoor tijdens de ontwikkeling stabieler.
 
-Om onnodige belasting van de live omgeving te beperken, worden overbodige requests en onnodig parallel uitvoeren van tests zoveel mogelijk vermeden.
+Omdat de tests tegen de live omgeving van bol.com worden uitgevoerd, is dit een extern risico waarop het testframework zelf beperkte invloed heeft. De IP-blokkering heeft de ontwikkeling van de gevraagde testscenario's uiteindelijk niet verhinderd, maar kan de reproduceerbaarheid van QA-1 beïnvloeden.
 
-In een productieomgeving zou voor structurele end-to-end testautomatisatie bij voorkeur gebruikgemaakt worden van een geschikte testomgeving of een afgesproken oplossing waarbij geautomatiseerd testverkeer niet door botbeveiliging wordt geblokkeerd.
+Om onnodige belasting van de live omgeving te beperken, worden de tests bewust met één Playwright worker uitgevoerd. Hierdoor worden de scenario's sequentieel uitgevoerd en worden meerdere gelijktijdige geautomatiseerde browsersessies tegen bol.com vermeden.
+
+In een productieomgeving zou voor structurele end-to-end testautomatisatie bij voorkeur gebruikgemaakt worden van een geschikte test- of stagingomgeving, of van een afgesproken oplossing waarbij geautomatiseerd testverkeer niet door botbeveiliging wordt geblokkeerd.
 
 # Test Strategy
 
