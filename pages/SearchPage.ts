@@ -14,6 +14,8 @@ export class SearchPage {
     readonly englishFilterChip: Locator;
     readonly sortingSelect: Locator;
     readonly productLinks: Locator;
+    readonly nextPageButton: Locator;
+
 
     constructor(page: Page) {
         this.page = page;
@@ -52,6 +54,9 @@ export class SearchPage {
             .filter({
                 has: page.getByRole('heading', { level: 2 }),
             });
+        this.nextPageButton = page.getByRole('button', {
+            name: 'volgende',
+        });
     }
 
     async open(searchTerm: string): Promise<void> {
@@ -233,5 +238,46 @@ export class SearchPage {
             productTitle,
             productUrl,
         };
+    }
+
+    async getProductTitles(amount: number): Promise<string[]> {
+        const titles: string[] = [];
+        for (let i = 0; i < amount; i++) {
+            const title = await this.productLinks
+                .nth(i)
+                .getByRole('heading', { level: 2 })
+                .innerText();
+            titles.push(title.trim());
+        }
+        return titles;
+    }
+
+    async goToNextPage(): Promise<void> {
+        const currentPageTitle = await this.getProductTitles(1);
+        await this.waitForSearchDataResponse(
+            async () => {
+                await this.nextPageButton.click();
+            },
+            'page=2'
+        );
+        await expect(this.page).toHaveURL(/[?&]page=2(&|$)/);
+        await expect.poll(async () => {
+            return await this.getProductTitles(currentPageTitle.length);
+        }).not.toEqual(currentPageTitle);
+    }
+
+    async verifyPageNumber(pageNumber: number): Promise<void> {
+        await expect(this.page).toHaveURL(
+            new RegExp(`[?&]page=${pageNumber}(&|$)`)
+        );
+    }
+
+    async verifyProductTitlesAreUnique(
+        pageOneTitles: string[],
+        pageTwoTitles: string[]
+    ): Promise<void> {
+        for (const title of pageTwoTitles) {
+            expect(pageOneTitles).not.toContain(title);
+        }
     }
 }
