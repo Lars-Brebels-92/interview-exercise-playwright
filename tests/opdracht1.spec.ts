@@ -9,7 +9,7 @@ test('QA-1 Verify search that results contain a title and price', async ({ page 
 
     await homePage.open();
     await homePage.verifySearchBarIsLoaded();
-    await homePage.searchFor('Pokemon');
+    await homePage.searchFor('Dragonball Z');
     await searchPage.verifyProductsHaveTitleAndPrice();
     await ScreenshotHelper.takeScreenshot(page, 'search-results');
 });
