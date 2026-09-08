@@ -28,3 +28,7 @@ De huidige pipeline installeert tijdens iedere run de benodigde Node.js dependen
 In een grotere of vaker uitgevoerde pipeline kan de uitvoeringstijd verder geoptimaliseerd worden. Zo kan ervoor gekozen worden om alleen de browser-engine(s) te installeren waarop de tests daadwerkelijk uitgevoerd worden, in plaats van alle Playwright-browsers. Daarnaast kan gebruikgemaakt worden van een vooraf ingerichte CI-image waarin Node.js, Playwright en de benodigde browserdependencies al aanwezig zijn.
 
 Hierdoor hoeft niet bij iedere pipeline-run de volledige omgeving opnieuw opgebouwd te worden, wat de totale uitvoeringstijd kan verkorten.
+
+Naamgeving van testcases
+
+Voor de naamgeving van de geautomatiseerde testcases wordt een vaste structuur gebruikt. Elke test begint met een uniek testcase-ID, bijvoorbeeld QA1. Dit ID kan gekoppeld worden aan de overeenkomstige testcase in een testmanagementtool zoals Xray of TestRail. Hierdoor blijft de traceerbaarheid tussen de geautomatiseerde test en de gedocumenteerde testcase behouden.
